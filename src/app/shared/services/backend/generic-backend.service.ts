@@ -1,4 +1,4 @@
-import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse, HttpParams } from '@angular/common/http';
 import { Inject, Injectable } from '@angular/core';
 import { throwError } from 'rxjs';
 import { retry, catchError } from 'rxjs/operators';
@@ -10,9 +10,9 @@ export class GenericBackendService<T, TId> {
 
   constructor(@Inject(String) public url: string, public httpClient: HttpClient) { }
 
-  get(retryCount = 1) {
+  get(retryCount = 1, params?: HttpParams) {
     return this.httpClient
-      .get<T>(this.url)
+      .get<T>(this.url, { params })
       .pipe(retry(retryCount), catchError(this.handleError));
   }
 
