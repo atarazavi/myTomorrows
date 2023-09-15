@@ -5,152 +5,95 @@ import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { Router } from '@angular/router';
 import { subscribeSpyTo } from '@hirez_io/observer-spy';
 
-import { UsersStore } from './trials.store';
-import { UsersService } from '../services/trials.service';
-import { AddUserService } from '../services/add-user.service';
-import { NewUser } from '../models/newUser.model';
 import { SnackModule } from '#shared/components/snack/snack.module';
 import { UnitTestingModule } from '#shared/test/unit-testing.module';
 import { SnackService } from '#shared/components/snack/snack.service';
-import { User } from '../models/trial.model';
+import { TrialsService } from '../services/trials.service';
+import { TrialsStore } from './trials.store';
+import { DateType, Trials } from '../models/trial.model';
 
-describe('Users Store API Call', () => {
-  let backendService: Spy<UsersService>;
-  let addUserService: Spy<AddUserService>;
-  let testStore: UsersStore;
+describe('Trials Store API Call', () => {
+  let backendService: Spy<TrialsService>;
+  let testStore: TrialsStore;
   let snackServiceMock: Spy<SnackService>;
   const mockRouter = createSpyFromClass(Router);
-  const sampleUsersResponse: User[] = [
-    {
-      id: 'id-1',
-      username: 'username-1',
-      firstname: 'firstname-1',
-      lastname: 'lastname-1',
-      email: 'test@test.com',
-      telephone: '+4367764060286',
-      roles: ['role-1'],
-    },
-    {
-      id: 'id-2',
-      username: 'username-2',
-      firstname: 'firstname-2',
-      lastname: 'lastname-2',
-      email: 'test@test.com',
-      telephone: '+4367764060286',
-      roles: ['role-2'],
-    },
-  ];
-  const toBeAddedUserSample: NewUser = {
-    username: 'username-1',
-    firstname: 'firstname-1',
-    lastname: 'lastname-1',
-    email: 'test@test.com',
-    telephone: '+4367764060286',
-    roles: ['role-1'],
-  }
+  const sampleTrialsResponse: Trials = {
+    studies: [
+      {
+        protocolSection: {
+          identificationModule: {
+            nctId: "NCT123456",
+            organization: {
+              fullName: "ABC Pharmaceuticals"
+            },
+            briefTitle: "A Study on XYZ Drug",
+            officialTitle: "A Phase 3 Randomized Control Study on the Efficacy of XYZ Drug"
+          },
+          statusModule: {
+            overallStatus: "Recruiting",
+            startDateStruct: {
+              date: new Date('2022-01-01'),
+              type: DateType.ACTUAL
+            }
+          }
+        }
+      },
+      {
+        protocolSection: {
+          identificationModule: {
+            nctId: "NCT789012",
+            organization: {
+              fullName: "DEF Biotech"
+            },
+            briefTitle: "A Study on LMN Vaccine",
+            officialTitle: "A Phase 2 Clinical Trial on the Safety and Immunogenicity of LMN Vaccine"
+          },
+          statusModule: {
+            overallStatus: "Completed",
+            startDateStruct: {
+              date: new Date('2020-05-15'),
+              type: DateType.ESTIMATED
+            }
+          }
+        }
+      }
+    ],
+    nextPageToken: "somePageToken"
+  };
   beforeEach(() => {
     snackServiceMock = createSpyFromClass(SnackService);
-    backendService = createSpyFromClass(UsersService, ['get']);
-    addUserService = createSpyFromClass(AddUserService, ['post']);
+    backendService = createSpyFromClass(TrialsService, ['get']);
     TestBed.configureTestingModule({
       imports: [SnackModule, HttpClientTestingModule, UnitTestingModule],
       providers: [
-        UsersStore,
-        { provide: UsersService, useValue: backendService },
-        { provide: AddUserService, useValue: addUserService },
+        TrialsStore,
+        { provide: TrialsService, useValue: backendService },
         { provide: SnackService, useValue: snackServiceMock },
         { provide: Router, useValue: mockRouter },
       ],
     });
-    testStore = TestBed.inject(UsersStore);
+    testStore = TestBed.inject(TrialsStore);
   });
 
   //  - GET
-  it('should update users$ by backend successful response value when service calling is successful with 200 status', () => {
-    backendService.get.and.returnValue(observableOf(sampleUsersResponse));
-    testStore.loadUsers$();
+  it('should update trials$ by backend successful response value when service calling is successful with 200 status', () => {
+    backendService.get.and.returnValue(observableOf(sampleTrialsResponse));
+    testStore.loadTrials$();
 
-    const observerSpyUsers = subscribeSpyTo(testStore.users$);
-    const observerSpyUsersError = subscribeSpyTo(testStore.usersError$);
+    const observerSpyTrials = subscribeSpyTo(testStore.trials$);
+    const observerSpyTrialsError = subscribeSpyTo(testStore.trialsError$);
 
-    expect(observerSpyUsers.getLastValue()?.length).toBe(2);
-    expect(observerSpyUsersError.getLastValue()).toBeNull();
+    expect(observerSpyTrials.getLastValue()?.length).toBe(2);
+    expect(observerSpyTrialsError.getLastValue()).toBeNull();
   });
 
-  it('should update the usersError$ with HttpError', () => {
+  it('should update the trialsError$ with HttpError', () => {
     backendService.get.and.throwWith(observableOf(ErrorEvent));
-    testStore.loadUsers$();
+    testStore.loadTrials$();
 
-    const observerSpyUsersError = subscribeSpyTo(testStore.usersError$);
+    const observerSpyUsersError = subscribeSpyTo(testStore.trialsError$);
 
     expect(observerSpyUsersError.getLastValue()).not.toBeNull();
   });
 
-  //  - DELETE
-  it('should delete the user if API works and update the usersList', () => {
-    backendService.get.and.returnValue(observableOf(sampleUsersResponse));
-    testStore.loadUsers$();
-
-    backendService.delete.and.returnValue(observableOf(''));
-    testStore.deleteUser$(sampleUsersResponse[0]);
-    const observerSpyUsers = subscribeSpyTo(testStore.users$);
-
-    expect(observerSpyUsers.getLastValue()?.length).toBe(1);
-    expect(
-      observerSpyUsers
-        .getLastValue()
-        ?.find((eachUser) => eachUser.id === 'id-2')
-    ).toBeTruthy();
-    expect(snackServiceMock.showSnackBar).toHaveBeenCalled();
-  });
-
-  it('should Error in snackbar when there are problem and HttpError', () => {
-    backendService.delete.and.throwWith(observableOf(ErrorEvent));
-    testStore.deleteUser$(sampleUsersResponse[0]);
-    expect(snackServiceMock.showErrorSnackBar).toHaveBeenCalled();
-  });
-
-  //  - EDIT
-  it('should edit the user if API works(200) and redirect to listing page', () => {
-    backendService.put.and.returnValue(observableOf(''));
-    const editedSampleUser = {
-      ...sampleUsersResponse[0],
-      username: 'name-1-edited',
-    };
-    testStore.editUser$(editedSampleUser);
-
-    expect(snackServiceMock.showSnackBar).toHaveBeenCalled();
-    expect(mockRouter.navigate).toHaveBeenCalledWith(['users/list']);
-  });
-
-  it('should update userEditError with HttpError in case of Error in API call & show error also in snack bar', () => {
-    backendService.put.and.throwWith(observableOf(ErrorEvent));
-    const editedSampleUser = {
-      ...sampleUsersResponse[0],
-      name: 'name-1-edited',
-    };
-    testStore.editUser$(editedSampleUser);
-
-    const observerSpyUserEditError = subscribeSpyTo(testStore.userEditError$);
-
-    expect(observerSpyUserEditError.getLastValue()).not.toBeNull();
-    expect(snackServiceMock.showErrorSnackBar).toHaveBeenCalled();
-  });
-
-  //  - ADD
-  it('should add the user if API works(200) and redirect to listing page', () => {
-    addUserService.postWithoutId.and.returnValue(observableOf(''));
-    testStore.addUser$(toBeAddedUserSample);
-    expect(snackServiceMock.showSnackBar).toHaveBeenCalled();
-    expect(mockRouter.navigate).toHaveBeenCalledWith(['users/list']);
-  });
-
-  it('should update userAddError with HttpError in case of Error in API call & show error also in snack bar', () => {
-    addUserService.postWithoutId.and.throwWith(observableOf(ErrorEvent));
-    testStore.addUser$(toBeAddedUserSample);
-
-    const observerSpyUserAddError = subscribeSpyTo(testStore.userAddError$);
-    expect(observerSpyUserAddError.getLastValue()).not.toBeNull();
-    expect(snackServiceMock.showErrorSnackBar).toHaveBeenCalled();
-  });
 });

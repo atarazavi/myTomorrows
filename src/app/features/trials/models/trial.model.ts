@@ -32,7 +32,7 @@ interface DateStruct {
   type: DateType;
 }
 
-enum DateType {
+export enum DateType {
   ACTUAL = 'ACTUAL',
   ESTIMATED = 'ESTIMATED'
 }
