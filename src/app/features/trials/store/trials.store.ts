@@ -5,7 +5,7 @@ import { catchError, switchMap, tap } from 'rxjs/operators';
 import { Router } from '@angular/router';
 import { HttpErrorResponse } from '@angular/common/http';
 
-import { Study, Trials } from '../models/trial.model';
+import { Study } from '../models/trial.model';
 import { TrialsService } from '../services/trials.service';
 import { SnackService } from '#shared/components/snack/snack.service';
 
@@ -37,8 +37,6 @@ export class TrialsStore extends ComponentStore<TrialsStoreInterface> {
         this.trialsService.get(0).pipe(
           tap({
             next: (trials) => {
-              console.log(trials);
-
               this.studiesList = trials.studies;
               this.patchState({ trials: trials.studies });
               this.resetErrors();
@@ -53,5 +51,5 @@ export class TrialsStore extends ComponentStore<TrialsStoreInterface> {
 
   resetErrors() {
     this.patchState({ trialsError: null })
-  };
+  }
 }

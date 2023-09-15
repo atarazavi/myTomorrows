@@ -1,15 +1,17 @@
+<!-- eslint-disable @angular-eslint/template/interactive-supports-focus -->
+<!-- eslint-disable @angular-eslint/template/click-events-have-key-events -->
 <mat-sidenav-container autosize>
   <mat-sidenav [fixedInViewport]="true" mode="side" opened="true">
     <mat-nav-list>
       <img class="logoImage" src="assets/mytomorrows.png" alt="Logo" />
       <div class="menuItemsContainer">
-        <a routerLink="/trials" routerLinkActive="active-link">
+        <a (click)="navigateTo('list')" routerLinkActive="active-link">
           <mat-list-item>
             <mat-icon>list</mat-icon>
             <div class="MenuItemText" matLine>Studies</div>
           </mat-list-item>
         </a>
-        <a routerLink="/trials/favorites" routerLinkActive="active-link">
+        <a (click)="navigateTo('favorites')" routerLinkActive="active-link">
           <mat-list-item>
             <mat-icon>favorite</mat-icon>
             <div class="MenuItemText" matLine>Favorites</div>
