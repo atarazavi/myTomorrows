@@ -1,0 +1,26 @@
+<mat-sidenav-container autosize>
+  <mat-sidenav [fixedInViewport]="true" mode="side" opened="true">
+    <mat-nav-list>
+      <img class="logoImage" src="assets/mytomorrows.png" alt="Logo" />
+      <div class="menuItemsContainer">
+        <a routerLink="/trials" routerLinkActive="active-link">
+          <mat-list-item>
+            <mat-icon>list</mat-icon>
+            <div class="MenuItemText" matLine>Studies</div>
+          </mat-list-item>
+        </a>
+        <a routerLink="/trials/favorites" routerLinkActive="active-link">
+          <mat-list-item>
+            <mat-icon>favorite</mat-icon>
+            <div class="MenuItemText" matLine>Favorites</div>
+          </mat-list-item>
+        </a>
+      </div>
+    </mat-nav-list>
+  </mat-sidenav>
+  <mat-sidenav-content>
+    <main>
+      <ng-content></ng-content>
+    </main>
+  </mat-sidenav-content>
+</mat-sidenav-container>
