@@ -1,3 +1,5 @@
+import { DateType } from "./dateType.model";
+
 export interface Trials {
   studies: Study[],
   nextPageToken: string,
@@ -30,9 +32,4 @@ interface StatusModule {
 interface DateStruct {
   date: Date;
   type: DateType;
-}
-
-export enum DateType {
-  ACTUAL = 'ACTUAL',
-  ESTIMATED = 'ESTIMATED'
 }

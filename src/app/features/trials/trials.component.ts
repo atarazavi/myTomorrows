@@ -1,7 +1,8 @@
+import { StudiesFlattenerService } from './../../shared/services/studiesFlattener/studies-flattener.service';
 import { Router } from '@angular/router';
 import { Component, ViewChild, OnInit, OnDestroy } from '@angular/core';
 import { MatPaginator } from '@angular/material/paginator';
-import { MatSort, Sort } from '@angular/material/sort';
+import { MatSort } from '@angular/material/sort';
 import { MatTable, MatTableDataSource } from '@angular/material/table';
 import { filter, Observable, Subject, takeUntil } from 'rxjs';
 import { HttpErrorResponse } from '@angular/common/http';
@@ -10,6 +11,7 @@ import { trigger, state, style, transition, animate } from '@angular/animations'
 import { isNotNull } from '#shared/typescript/nullCheck';
 import { Study } from './models/trial.model';
 import { TrialsStore } from './store/trials.store';
+import { FlatStudy } from './models/flatStudy.model';
 
 @Component({
   selector: 'app-trials',
@@ -31,7 +33,7 @@ export class TrialsComponent implements OnInit, OnDestroy {
   trialsError$: Observable<HttpErrorResponse | null>;
   columnsToDisplay: string[];
   columnsToDisplayWithExpand: string[];
-  dataSource: MatTableDataSource<Study>;
+  dataSource: MatTableDataSource<FlatStudy>;
   expandedElement: Study | null;
   private readonly destroyed$ = new Subject<void>();
 
@@ -42,6 +44,7 @@ export class TrialsComponent implements OnInit, OnDestroy {
   constructor(
     public trialsStore: TrialsStore,
     private readonly router: Router,
+    private studiesFlattenerService: StudiesFlattenerService,
   ) {
     this.trials$ = this.trialsStore.trials$;
     this.trialsError$ = this.trialsStore.trialsError$;
@@ -61,14 +64,11 @@ export class TrialsComponent implements OnInit, OnDestroy {
         takeUntil(this.destroyed$),
       )
       .subscribe(response => {
-        this.dataSource = new MatTableDataSource(response);
+        const flattenedStudies: FlatStudy[] = this.studiesFlattenerService.flattenStudies(response);
+        this.dataSource = new MatTableDataSource(flattenedStudies);
         setTimeout(() => {
           this.dataSource.paginator = this.paginator;
           this.dataSource.sort = this.sort;
-          const sortState: Sort = { active: 'fullName', direction: 'asc' };
-          this.sort.active = sortState.active;
-          this.sort.direction = sortState.direction;
-          this.sort.sortChange.emit(sortState);
         });
       });
   }

@@ -31,7 +31,7 @@
             <ng-container matColumnDef="nctId">
               <th mat-header-cell *matHeaderCellDef mat-sort-header>nctId</th>
               <td mat-cell *matCellDef="let row">
-                {{ row.protocolSection.identificationModule.nctId }}
+                {{ row.nctId }}
               </td>
             </ng-container>
 
@@ -41,9 +41,7 @@
                 fullName
               </th>
               <td mat-cell *matCellDef="let row">
-                {{
-                  row.protocolSection.identificationModule.organization.fullName
-                }}
+                {{ row.fullName }}
               </td>
             </ng-container>
 
@@ -53,7 +51,7 @@
                 overallStatus
               </th>
               <td mat-cell *matCellDef="let row">
-                {{ row.protocolSection.statusModule.overallStatus }}
+                {{ row.overallStatus }}
               </td>
             </ng-container>
 
@@ -99,9 +97,7 @@
                 >
                   <mat-chip-listbox class="example-chip">
                     <div class="expandedRow_content_title">Brief Title:</div>
-                    {{
-                      element.protocolSection.identificationModule.briefTitle
-                    }}
+                    {{ element.briefTitle }}
                   </mat-chip-listbox>
                 </div>
               </td>
