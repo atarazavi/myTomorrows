@@ -1,0 +1,21 @@
+.container {
+  width: 100%;
+}
+
+.flex-container {
+  display: flex;
+  width: 100%;
+}
+
+tr.example-detail-row {
+  height: 0 !important;
+}
+
+.mat-mdc-standard-chip {
+  border-radius: 0;
+  min-height: 25px;
+}
+
+.app-skeleton-loader {
+  padding: 20px;
+}
