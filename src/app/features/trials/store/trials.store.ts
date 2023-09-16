@@ -12,6 +12,7 @@ interface TrialsStoreInterface {
   trials: Study[] | null;
   nextPageToken: string | null;
   trialsError: HttpErrorResponse | null;
+  favorites: Study[];
 }
 
 @Injectable()
@@ -19,6 +20,7 @@ export class TrialsStore extends ComponentStore<TrialsStoreInterface> {
   public studiesList: Study[] = [];
   readonly trials$ = this.select((state) => state.trials);
   readonly trialsError$ = this.select((state) => state.trialsError);
+  readonly favorites$ = this.select((state) => state.favorites);
   private trialsBuffer: Study[] = [];
 
   constructor(
@@ -29,6 +31,7 @@ export class TrialsStore extends ComponentStore<TrialsStoreInterface> {
       trials: null,
       trialsError: null,
       nextPageToken: null,
+      favorites: [],
     });
     // Initialize the timer and data flow
     this.initTimer();
@@ -73,7 +76,6 @@ export class TrialsStore extends ComponentStore<TrialsStoreInterface> {
         next: (trials) => {
           // Update buffer with new trials
           this.trialsBuffer = trials.studies;
-
           this.patchState({
             nextPageToken: trials.nextPageToken,
           });
@@ -118,6 +120,37 @@ export class TrialsStore extends ComponentStore<TrialsStoreInterface> {
       })
     )
   );
+  addFavorite(NctId: string) {
+    const currentFavorites = this.get().favorites;
+
+    if (currentFavorites.length >= 10) {
+      // Handle maximum favorites reached
+      this.snackService.showErrorSnackBar('Maximum number of favorites reached');
+      return;
+    }
+
+    // Look for the trial in the trialsBuffer
+    let toBeAddedTrial = this.trialsBuffer.find(each => each.protocolSection.identificationModule.nctId === NctId);
+
+    // If not found in the buffer, look for it in the current list of trials
+    if (!toBeAddedTrial) {
+      const currentTrials = this.get().trials;
+      if (currentTrials) {
+        toBeAddedTrial = currentTrials.find(each => each.protocolSection.identificationModule.nctId === NctId);
+      }
+    }
+
+    if (toBeAddedTrial) {
+      const updatedFavorites = [...currentFavorites, toBeAddedTrial];
+      this.patchState({ favorites: updatedFavorites });
+    }
+  }
+
+  removeFavorite(toBeRemovedNctId: string) {
+    const currentFavorites = this.get().favorites;
+    const updatedFavorites = currentFavorites.filter(t => t.protocolSection.identificationModule.nctId !== toBeRemovedNctId);
+    this.patchState({ favorites: updatedFavorites });
+  }
 
   resetErrors() {
     this.patchState({ trialsError: null })

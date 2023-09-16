@@ -76,7 +76,11 @@
                     >keyboard_arrow_up</mat-icon
                   >
                 </button>
-                <button mat-icon-button title="Favorite">
+                <button
+                  mat-icon-button
+                  title="Favorite"
+                  (click)="onAddFavorite(element.nctId)"
+                >
                   <mat-icon>favorite_border</mat-icon>
                 </button>
               </td>

@@ -83,8 +83,10 @@ export class TrialsComponent implements OnInit, OnDestroy {
     }
   }
 
-  redirectToAddUserPage() {
-    this.router.navigate(['trials/favorites']);
+  onAddFavorite(NctId: string) {
+    console.log(NctId);
+
+    this.trialsStore.addFavorite(NctId);
   }
 
   ngOnDestroy() {
