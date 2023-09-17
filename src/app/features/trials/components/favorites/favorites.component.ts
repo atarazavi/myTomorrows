@@ -19,7 +19,7 @@ export class FavoritesComponent implements OnInit, OnDestroy {
   columnsToDisplay: string[];
   dataSource: MatTableDataSource<FlatStudy>;
   expandedElement: Study | null;
-  private readonly destroyed$ = new Subject<void>();
+  public readonly destroyed$ = new Subject<void>();
 
   @ViewChild(MatSort) sort: MatSort;
   @ViewChild(MatTable) table: MatTable<Study>;

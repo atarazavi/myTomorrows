@@ -40,7 +40,8 @@
           <td mat-cell *matCellDef="let element">
             <button
               mat-icon-button
-              title="Favorite"
+              title="remove favorite"
+              class="remove_favorite-button"
               (click)="onRemoveFavorite(element.nctId)"
             >
               <mat-icon>remove_circle</mat-icon>
