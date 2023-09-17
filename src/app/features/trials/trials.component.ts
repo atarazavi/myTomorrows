@@ -35,6 +35,8 @@ export class TrialsComponent implements OnInit, OnDestroy {
   columnsToDisplayWithExpand: string[];
   dataSource: MatTableDataSource<FlatStudy>;
   expandedElement: Study | null;
+  favorites: Study[] = [];
+
   private readonly destroyed$ = new Subject<void>();
 
   @ViewChild(MatPaginator) paginator: MatPaginator;
@@ -54,6 +56,10 @@ export class TrialsComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.loadData();
+
+    this.trialsStore.favorites$.subscribe(favList => {
+      this.favorites = favList;
+    });
   }
 
   public loadData() {
@@ -82,9 +88,16 @@ export class TrialsComponent implements OnInit, OnDestroy {
       this.dataSource.paginator.firstPage();
     }
   }
+  onToggleFavorite(NctId: string) {
+    if (this.isFavorite(NctId)) {
+      this.trialsStore.removeFavorite(NctId);
+    } else {
+      this.trialsStore.addFavorite(NctId);
+    }
+  }
 
-  onAddFavorite(NctId: string) {
-    this.trialsStore.addFavorite(NctId);
+  isFavorite(NctId: string): boolean {
+    return this.favorites.some(favorite => favorite.protocolSection.identificationModule.nctId === NctId);
   }
 
   ngOnDestroy() {

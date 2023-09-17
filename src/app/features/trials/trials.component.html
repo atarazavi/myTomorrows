@@ -79,9 +79,13 @@
                 <button
                   mat-icon-button
                   title="Favorite"
-                  (click)="onAddFavorite(element.nctId)"
+                  (click)="onToggleFavorite(element.nctId)"
                 >
-                  <mat-icon>favorite_border</mat-icon>
+                  <mat-icon (click)="trialsStore.addFavorite(element.nctId)">
+                    {{
+                      isFavorite(element.nctId) ? "favorite" : "favorite_border"
+                    }}
+                  </mat-icon>
                 </button>
               </td>
             </ng-container>
