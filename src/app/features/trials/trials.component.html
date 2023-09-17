@@ -7,7 +7,7 @@
         <mat-label>Filter</mat-label>
         <input
           matInput
-          id="filterUsersTableInput"
+          id="filterTrialsTableInput"
           (keyup)="applyFilter($event)"
           #input
         />
@@ -78,6 +78,7 @@
                 </button>
                 <button
                   mat-icon-button
+                  class="favoriteButton"
                   title="Favorite"
                   (click)="onToggleFavorite(element.nctId)"
                 >
