@@ -12,55 +12,73 @@ import { TrialsService } from '../services/trials.service';
 import { TrialsStore } from './trials.store';
 import { Trials } from '../models/trial.model';
 import { DateType } from '../models/dateType.model';
+import { FlatStudy } from '../models/flatStudy.model';
+import { HttpErrorResponse } from '@angular/common/http';
 
 describe('Trials Store API Call', () => {
   let backendService: Spy<TrialsService>;
   let testStore: TrialsStore;
   let snackServiceMock: Spy<SnackService>;
-  const mockRouter = createSpyFromClass(Router);
-  const sampleTrialsResponse: Trials = {
+  const sampleTrialsMock: Trials = {
     studies: [
       {
         protocolSection: {
           identificationModule: {
             nctId: "NCT123456",
             organization: {
-              fullName: "ABC Pharmaceuticals"
+              fullName: "Health Research Institute",
             },
-            briefTitle: "A Study on XYZ Drug",
-            officialTitle: "A Phase 3 Randomized Control Study on the Efficacy of XYZ Drug"
+            briefTitle: "Study on Cardiovascular Diseases",
+            officialTitle: "A Comprehensive Study on the Effects of X Drug on Cardiovascular Diseases",
           },
           statusModule: {
             overallStatus: "Recruiting",
             startDateStruct: {
-              date: new Date('2022-01-01'),
-              type: DateType.ACTUAL
-            }
-          }
-        }
+              date: new Date('2023-01-01T00:00:00'),
+              type: DateType.ACTUAL,
+            },
+          },
+        },
       },
       {
         protocolSection: {
           identificationModule: {
-            nctId: "NCT789012",
+            nctId: "NCT654321",
             organization: {
-              fullName: "DEF Biotech"
+              fullName: "Mental Health Organization",
             },
-            briefTitle: "A Study on LMN Vaccine",
-            officialTitle: "A Phase 2 Clinical Trial on the Safety and Immunogenicity of LMN Vaccine"
+            briefTitle: "Study on Anxiety Disorders",
+            officialTitle: "Investigating the Efficacy of Y Therapy for Anxiety Disorders",
           },
           statusModule: {
             overallStatus: "Completed",
             startDateStruct: {
-              date: new Date('2020-05-15'),
-              type: DateType.ESTIMATED
-            }
-          }
-        }
-      }
+              date: new Date('2021-06-15T00:00:00'),
+              type: DateType.ESTIMATED,
+            },
+          },
+        },
+      },
     ],
-    nextPageToken: "somePageToken"
+    nextPageToken: "ABC123XYZ",
   };
+  const flattenedTrialsMock: FlatStudy[] = [{
+    nctId: "NCT123456",
+    fullName: "Health Research Institute",
+    briefTitle: "Study on Cardiovascular Diseases",
+    officialTitle: "A Comprehensive Study on the Effects of X Drug on Cardiovascular Diseases",
+    overallStatus: "Recruiting",
+    startDate: new Date('2023-01-01T00:00:00'),
+    dateType: DateType.ACTUAL,
+  }, {
+    nctId: "NCT654321",
+    fullName: "Mental Health Organization",
+    briefTitle: "Study on Anxiety Disorders",
+    officialTitle: "Investigating the Efficacy of Y Therapy for Anxiety Disorders",
+    overallStatus: "Completed",
+    startDate: new Date('2021-06-15T00:00:00'),
+    dateType: DateType.ESTIMATED,
+  }];
   beforeEach(() => {
     snackServiceMock = createSpyFromClass(SnackService);
     backendService = createSpyFromClass(TrialsService, ['get']);
@@ -70,7 +88,6 @@ describe('Trials Store API Call', () => {
         TrialsStore,
         { provide: TrialsService, useValue: backendService },
         { provide: SnackService, useValue: snackServiceMock },
-        { provide: Router, useValue: mockRouter },
       ],
     });
     testStore = TestBed.inject(TrialsStore);
@@ -78,7 +95,7 @@ describe('Trials Store API Call', () => {
 
   //  - GET
   it('should update trials$ by backend successful response value when service calling is successful with 200 status', () => {
-    backendService.get.and.returnValue(observableOf(sampleTrialsResponse));
+    backendService.get.and.returnValue(observableOf(sampleTrialsMock));
     testStore.loadTrials$();
 
     const observerSpyTrials = subscribeSpyTo(testStore.trials$);
@@ -97,4 +114,58 @@ describe('Trials Store API Call', () => {
     expect(observerSpyUsersError.getLastValue()).not.toBeNull();
   });
 
+  it('should correctly add a favorite trial when addFavorite is called', () => {
+    testStore.patchState({
+      favorites: [],
+      trials: sampleTrialsMock.studies
+    });
+    testStore.addFavorite('NCT123456');
+
+    const observerSpyFavorites = subscribeSpyTo(testStore.favorites$);
+    const lastValue = observerSpyFavorites.getLastValue() || [];
+
+    expect(lastValue[0]?.protocolSection?.identificationModule?.nctId).toEqual('NCT123456');
+  });
+
+  it('should correctly remove a favorite trial when removeFavorite is called', () => {
+    testStore.patchState({
+      favorites: sampleTrialsMock.studies
+    });
+    testStore.removeFavorite('NCT123456');
+
+    const observerSpyFavorites = subscribeSpyTo(testStore.favorites$);
+    const lastValue = observerSpyFavorites.getLastValue() || [];
+
+    expect(lastValue.length).toBe(1);
+    expect(lastValue[0]?.protocolSection.identificationModule.nctId).toEqual('NCT654321');
+  });
+
+  it('should reset trialsError when resetErrors is called', () => {
+    testStore.patchState({
+      trialsError: { message: 'Some error occurred' } as HttpErrorResponse
+    });
+    testStore.resetErrors();
+
+    const observerSpyTrialsError = subscribeSpyTo(testStore.trialsError$);
+    expect(observerSpyTrialsError.getLastValue()).toBeNull();
+  });
+
+  it('should correctly update trials list from trialsBuffer when updateTrialsList is called', () => {
+    // Populate the trialsBuffer with mock data
+    testStore.trialsBuffer = sampleTrialsMock.studies;
+
+    // Mock the initial state with an empty trials array
+    testStore.patchState({ trials: [] });
+
+    // Call the method to update the trials list
+    (testStore as any).updateTrialsList(); // Casting to 'any' if method is private
+
+    // Spy on the trials$ observable to check if it got updated correctly
+    const observerSpyTrials = subscribeSpyTo(testStore.trials$);
+    const lastValue = observerSpyTrials.getLastValue() || [];
+
+    // Validate that the trials list got updated
+    expect(lastValue.length).toBe(1);
+    expect(lastValue[0]?.protocolSection?.identificationModule?.nctId).toEqual('NCT123456');
+  });
 });

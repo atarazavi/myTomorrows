@@ -21,7 +21,7 @@ export class TrialsStore extends ComponentStore<TrialsStoreInterface> {
   readonly trials$ = this.select((state) => state.trials);
   readonly trialsError$ = this.select((state) => state.trialsError);
   readonly favorites$ = this.select((state) => state.favorites);
-  private trialsBuffer: Study[] = [];
+  public trialsBuffer: Study[] = [];
 
   constructor(
     private trialsService: TrialsService,
@@ -120,6 +120,7 @@ export class TrialsStore extends ComponentStore<TrialsStoreInterface> {
       })
     )
   );
+
   addFavorite(NctId: string) {
     const currentFavorites = this.get().favorites;
 
