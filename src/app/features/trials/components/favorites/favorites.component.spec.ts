@@ -5,6 +5,7 @@ import { RouterTestingModule } from '@angular/router/testing';
 import { SnackModule } from '#shared/components/snack/snack.module';
 import { UnitTestingModule } from '#shared/test/unit-testing.module';
 import { FavoritesComponent } from './favorites.component';
+import { TrialsStore } from '../../store/trials.store';
 
 
 describe('FavoriteComponent : AddMode', () => {
@@ -15,6 +16,9 @@ describe('FavoriteComponent : AddMode', () => {
     await TestBed.configureTestingModule({
       declarations: [
         FavoritesComponent,
+      ],
+      providers: [
+        TrialsStore,
       ],
       imports: [
         SnackModule,

@@ -10,7 +10,8 @@ import { UnitTestingModule } from '#shared/test/unit-testing.module';
 import { SnackService } from '#shared/components/snack/snack.service';
 import { TrialsService } from '../services/trials.service';
 import { TrialsStore } from './trials.store';
-import { DateType, Trials } from '../models/trial.model';
+import { Trials } from '../models/trial.model';
+import { DateType } from '../models/dateType.model';
 
 describe('Trials Store API Call', () => {
   let backendService: Spy<TrialsService>;
