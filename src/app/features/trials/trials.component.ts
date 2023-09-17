@@ -84,8 +84,6 @@ export class TrialsComponent implements OnInit, OnDestroy {
   }
 
   onAddFavorite(NctId: string) {
-    console.log(NctId);
-
     this.trialsStore.addFavorite(NctId);
   }
 
