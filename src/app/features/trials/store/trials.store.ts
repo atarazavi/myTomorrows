@@ -54,7 +54,7 @@ export class TrialsStore extends ComponentStore<TrialsStoreInterface> {
     const nextTrial = this.trialsBuffer.shift();
 
     // Get the current list of trials
-    const currentTrials = [...(this.get().trials || [])];
+    const currentTrials = [...(this.get().trials ?? [])];
 
     // Add the next trial to the list
     if (nextTrial) {
