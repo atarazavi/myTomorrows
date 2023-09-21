@@ -14,8 +14,6 @@ export class StudiesFlattenerService {
         briefTitle: study.protocolSection.identificationModule.briefTitle,
         officialTitle: study.protocolSection.identificationModule.officialTitle,
         overallStatus: study.protocolSection.statusModule.overallStatus,
-        startDate: study.protocolSection.statusModule.startDateStruct.date,
-        dateType: study.protocolSection.statusModule.startDateStruct.type,
       };
     });
   };

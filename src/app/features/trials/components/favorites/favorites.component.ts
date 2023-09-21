@@ -45,8 +45,6 @@ export class FavoritesComponent implements OnInit, OnDestroy {
       .subscribe(response => {
         const flattenedStudies: FlatStudy[] = this.studiesFlattenerService.flattenStudies(response);
         this.dataSource = new MatTableDataSource(flattenedStudies);
-        console.log(this.dataSource);
-
         setTimeout(() => {
           this.dataSource.sort = this.sort;
         });

@@ -10,7 +10,6 @@ import { SnackService } from '#shared/components/snack/snack.service';
 import { TrialsService } from '../services/trials.service';
 import { TrialsStore } from './trials.store';
 import { Trials } from '../models/trial.model';
-import { DateType } from '../models/dateType.model';
 import { HttpErrorResponse } from '@angular/common/http';
 
 describe('Trials Store API Call', () => {
@@ -31,10 +30,6 @@ describe('Trials Store API Call', () => {
           },
           statusModule: {
             overallStatus: "Recruiting",
-            startDateStruct: {
-              date: new Date('2023-01-01T00:00:00'),
-              type: DateType.ACTUAL,
-            },
           },
         },
       },
@@ -50,10 +45,6 @@ describe('Trials Store API Call', () => {
           },
           statusModule: {
             overallStatus: "Completed",
-            startDateStruct: {
-              date: new Date('2021-06-15T00:00:00'),
-              type: DateType.ESTIMATED,
-            },
           },
         },
       },

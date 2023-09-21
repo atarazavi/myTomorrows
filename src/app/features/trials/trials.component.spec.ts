@@ -9,7 +9,6 @@ import { TrialsModule } from './trials.module';
 import { ComponentPage } from '#shared/test/component-page';
 import { TrialsComponent } from './trials.component';
 import { CreateKeyboardEvent } from '#shared/test/keyboard-event-stub';
-import { DateType } from './models/dateType.model';
 import { Trials } from './models/trial.model';
 import { UnitTestingModule } from '#shared/test/unit-testing.module';
 import { FlatStudy } from './models/flatStudy.model';
@@ -44,10 +43,6 @@ describe('TrialsComponent', () => {
           },
           statusModule: {
             overallStatus: "Recruiting",
-            startDateStruct: {
-              date: new Date('2023-01-01T00:00:00'),
-              type: DateType.ACTUAL,
-            },
           },
         },
       },
@@ -63,10 +58,6 @@ describe('TrialsComponent', () => {
           },
           statusModule: {
             overallStatus: "Completed",
-            startDateStruct: {
-              date: new Date('2021-06-15T00:00:00'),
-              type: DateType.ESTIMATED,
-            },
           },
         },
       },
@@ -79,16 +70,12 @@ describe('TrialsComponent', () => {
     briefTitle: "Study on Cardiovascular Diseases",
     officialTitle: "A Comprehensive Study on the Effects of X Drug on Cardiovascular Diseases",
     overallStatus: "Recruiting",
-    startDate: new Date('2023-01-01T00:00:00'),
-    dateType: DateType.ACTUAL,
   }, {
     nctId: "NCT654321",
     fullName: "Mental Health Organization",
     briefTitle: "Study on Anxiety Disorders",
     officialTitle: "Investigating the Efficacy of Y Therapy for Anxiety Disorders",
     overallStatus: "Completed",
-    startDate: new Date('2021-06-15T00:00:00'),
-    dateType: DateType.ESTIMATED,
   }];
 
   beforeEach(() => {

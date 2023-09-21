@@ -1,5 +1,3 @@
-import { DateType } from "./dateType.model";
-
 export interface Trials {
   studies: Study[],
   nextPageToken: string,
@@ -26,10 +24,4 @@ interface Organization {
 
 interface StatusModule {
   overallStatus: string;
-  startDateStruct: DateStruct;
-}
-
-interface DateStruct {
-  date: Date;
-  type: DateType;
 }
